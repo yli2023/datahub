@@ -7,7 +7,7 @@ import request from "/@/utils/request"
  */
 export function fetchList(query?: Object) {
   return request({
-    url: '/demo/demo/page',
+    url: '/demo/project/page',
     method: 'get',
     params: query
   })
@@ -20,7 +20,7 @@ export function fetchList(query?: Object) {
  */
 export function addObj(obj?: Object) {
   return request({
-    url: '/demo/demo',
+    url: '/demo/project',
     method: 'post',
     data: obj
   })
@@ -33,70 +33,9 @@ export function addObj(obj?: Object) {
  */
 export function getObj(obj?: Object) {
   return request({
-    url: '/demo/demo/details',
+    url: '/demo/project/details',
     method: 'get',
     params: obj
-  })
-}
-
-// /**
-//  * 根据查询参数获取对象某两列详情。
-//  * @param {Object} [query] - 查询参数。
-//  * @returns {Promise} 请求的 Promise 对象数组。
-//  */
-// export function getObjlist(query?: Object) {
-//   return request({
-//     url: '/demo/demo/select',
-//     method: 'get',
-//     params: query
-//   })
-// }
-
-//返回两列
-export function getObjlist(query?: Object) {
-  return request({
-    url: '/demo/demo/select',
-    method: 'get',
-    params: query
-  }).then(response => {
-    if (Array.isArray(response.data)) {
-      return response.data;
-    } else {
-      throw new Error('返回的数据不是数组');
-    }
-  }).catch(error => {
-    throw new Error('请求出错：' + error.message);
-  });
-}
-
-//列名接口
-export function getColumn(query?: Object) {
-  return request({
-    url: '/demo/demo/column',
-    method: 'get',
-    params: query
-  }).then(response => {
-    if (Array.isArray(response.data)) {
-      return response.data;
-    } else {
-      throw new Error('返回的数据不是数组');
-    }
-  }).catch(error => {
-    throw new Error('请求出错：' + error.message);
-  });
-}
-
-
-/**
- * 根据查询参数获取对象某两列详情。
- * @param {Object} [query] - 查询参数。
- * @returns {Promise} 请求的 Promise 对象数组。
- */
-export function getObjlist_page(query?: Object) {
-  return request({
-    url: '/demo/demo/select1',
-    method: 'get',
-    params: query
   })
 }
 
@@ -107,7 +46,7 @@ export function getObjlist_page(query?: Object) {
  */
 export function delObjs(ids?: Object) {
   return request({
-    url: '/demo/demo',
+    url: '/demo/project',
     method: 'delete',
     data: ids
   })
@@ -120,7 +59,7 @@ export function delObjs(ids?: Object) {
  */
 export function putObj(obj?: Object) {
   return request({
-    url: '/demo/demo',
+    url: '/demo/project',
     method: 'put',
     data: obj
   })
