@@ -39,18 +39,26 @@ export function getObj(obj?: Object) {
   })
 }
 
-// /**
-//  * 根据查询参数获取对象某两列详情。
-//  * @param {Object} [query] - 查询参数。
-//  * @returns {Promise} 请求的 Promise 对象数组。
-//  */
-// export function getObjlist(query?: Object) {
-//   return request({
-//     url: '/demo/demo/select',
-//     method: 'get',
-//     params: query
-//   })
-// }
+/**
+ * 返回的是滤波之后某列的所有数据。
+ * @param {Object} [query] - 查询参数。
+ * @returns {Promise} 请求的 Promise 对象数组。
+ */
+export function getProcess(query?: Object) {
+  return request({
+    url: '/demo/demo/process',
+    method: 'get',
+    params: query
+  }).then(response => {
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else {
+      throw new Error('返回的数据不是数组');
+    }
+  }).catch(error => {
+    throw new Error('请求出错：' + error.message);
+  });
+}
 
 //返回两列
 export function getObjlist(query?: Object) {
@@ -86,6 +94,22 @@ export function getColumn(query?: Object) {
   });
 }
 
+//返回时间
+export function getTimeList(query?: Object) {
+  return request({
+    url: '/demo/demo/time',
+    method: 'get',
+    params: query
+  }).then(response => {
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else {
+      throw new Error('返回的数据不是数组');
+    }
+  }).catch(error => {
+    throw new Error('请求出错：' + error.message);
+  });
+}
 
 /**
  * 根据查询参数获取对象某两列详情。
