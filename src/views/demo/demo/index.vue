@@ -1,6 +1,19 @@
 <template>
   <div class="layout-padding">
     <div class="layout-padding-auto layout-padding-view">
+      <el-button @click="dialogVisible = true">点击绘制图表</el-button>
+        <div class="sm:flex"></div>
+          <el-dialog title="图表" 
+            :modal-append-to-body='true'
+            v-model="dialogVisible"
+              @open="makeChart1(varx, vary1, vary2, vary3, vary4)"
+              append-to-body>
+              <el-card class="sm:mr-4 flex-1 !border-none mt-4" shadow="never">
+                <div>
+                  <div class="flex h-[400px] items-center" ref="commandChartRef" style="flex-grow: 2;"></div>
+                </div>
+              </el-card>        
+          </el-dialog>
       <el-row>
         <div class="mb8" style="width: 100%">
           <el-form-item label="参数选择">
@@ -56,13 +69,6 @@
       </el-table>
       <pagination @size-change="sizeChangeHandle" @current-change="currentChangeHandle" v-bind="state.pagination" />
       <div class="sm:flex">
-        <!-- 命令统计 -->
-        <el-card class="sm:mr-4 flex-1 !border-none mt-4" shadow="never">
-          <div>
-            <div class="mb-10">图表</div>
-            <div class="flex h-[200px] items-center" ref="commandChartRef"></div>
-          </div>
-        </el-card>
 		</div>
     </div>
 
@@ -205,6 +211,12 @@ const vary2 = ref();
 const vary3 = ref();
 const vary4 = ref();
 
+const dialogVisible = ref(false);
+
+const openDialog = () => {
+  dialogVisible.value = true;
+};
+
 //下拉菜单选择时间
 function change(varx: any) {
   let var1 = '';
@@ -225,7 +237,7 @@ const chartOptions = reactive({
       type: 'time',
       axisLabel: {
         //formatter: '{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}'
-        formatter: '{MM}-{dd} {HH}:{mm}:{ss}'
+        formatter: '{HH}:{mm}:{ss}'
       }
     },
     yAxis: {},
