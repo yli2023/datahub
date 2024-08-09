@@ -257,17 +257,22 @@ const dialogVisible = ref(false);
 const commandChartRef = ref();
 
 const chartOptions = reactive({
-	commandChartOption: {
+  commandChartOption: {
+    legend: {
+        data: ['first', 'second', ]
+    },
     xAxis: {
       type: 'time',
       axisLabel: {
         //formatter: '{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}'
-        formatter: '{HH}:{mm}:{ss}'
+        formatter: '{HH}:{mm}:{ss}',
+        rotate: 40
       }
     },
     yAxis: {},
 		series: [
-			{
+      {
+        name: 'first',
         type: 'line',
         data: <any>[[]],
         lineStyle: {
@@ -277,6 +282,7 @@ const chartOptions = reactive({
         }
       },
       {
+        name: 'second',
         type: 'line',
         data: <any>[[]],
         lineStyle: {
@@ -285,7 +291,23 @@ const chartOptions = reactive({
             type: 'solid'
         }
 			},
-		],
+    ],
+    tooltip: { // 鼠标悬浮提示框显示 X和Y 轴数据
+     trigger: 'item',
+     backgroundColor: 'rgba(32, 33, 36,.7)',
+     borderColor: 'rgba(32, 33, 36,0.20)',
+     borderWidth: 1,
+     textStyle: { // 文字提示样式
+       color: '#fff',
+       fontSize: '12'
+     },
+     axisPointer: { // 坐标轴虚线
+       type: 'cross',
+       label: {
+           backgroundColor: '#6a7985'
+       }
+     },
+    }  
 	},
 });
 
