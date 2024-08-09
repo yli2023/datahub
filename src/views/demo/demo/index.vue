@@ -6,7 +6,7 @@
           <el-dialog title="图表" 
             :modal-append-to-body='true'
             v-model="dialogVisible"
-              @open="makeChart1(tableName, vary1, vary2)"
+              @open="makeChart1(tableName, y1Name, y2Name, num)"
               append-to-body>
               <el-card class="sm:mr-4 flex-1 !border-none mt-4" shadow="never">
                 <div>
@@ -17,21 +17,21 @@
       <el-row>
         <div class="mb8" style="width: 100%">
           <el-form-item label="参数选择">
-            <el-select placeholder="选择x轴参数" v-model="varx">
+            <!-- <el-select placeholder="选择x轴参数" v-model="xName">
               <el-option :label="'createTime'" :value="column.list[1]"></el-option>
               <el-option :label="'updateTime'" :value="column.list[5]"></el-option>
-            </el-select>
-            <el-select placeholder="选择一个y轴参数" v-model="vary1">
+            </el-select> -->
+            <el-select placeholder="选择一个y轴参数" v-model="y1Name">
               <el-option :key="item" :label="item" :value="item" v-for="item in column.list"></el-option>
             </el-select>
-            <el-select placeholder="选择一个y轴参数可为空" v-model="vary2">
+            <el-select placeholder="选择一个y轴参数" v-model="y2Name">
               <el-option :key="item" :label="item" :value="item" v-for="item in column.list"></el-option>
             </el-select>
             <div class="demo-datetime-picker">
               <div class="block">
                 <span class="demonstration">StartTime</span>
                 <el-date-picker
-                  v-model="vary3"
+                  v-model="start"
                   type="datetime"
                   placeholder="Select date and time"
                 />
@@ -39,12 +39,13 @@
               <div class="block">
                 <span class="demonstration">EndTime</span>
                 <el-date-picker
-                  v-model="vary4"
+                  v-model="end"
                   type="datetime"
                   placeholder="Select date and time"
                 />
               </div>
             </div>
+            <el-input-number v-model="num" :min="-10" :max="10" @change="handleChange" />
             <!-- <el-select placeholder="选择起始时间" v-model="vary3">
               <el-option :key="item" :label="item" :value="item" v-for="item in time.list"></el-option>
             </el-select>
@@ -52,24 +53,24 @@
               <el-option :key="item" :label="item" :value="item" v-for="item in time.list"></el-option>
             </el-select> -->
           </el-form-item>
-          <el-button icon="folder-add" type="primary" class="ml10" @click="formDialogRef.openDialog()"
+          <!-- <el-button icon="folder-add" type="primary" class="ml10" @click="formDialogRef.openDialog()"
             v-auth="'demo_demo_add'">
             新 增
           </el-button>
           <el-button plain :disabled="multiple" icon="Delete" type="primary"
             v-auth="'demo_demo_del'" @click="handleDelete(selectObjs)">
             删除
-          </el-button>
+          </el-button> -->
           <!-- <el-button icon="folder-add" type="primary" class="ml10" @click="() => makeChart('username', 'nicename')"> -->
           <!-- <el-button icon="folder-add" type="primary" class="ml10" @click="() => makeChart1(tableName, vary1, vary2, vary3, vary4)">
             绘图
           </el-button> -->
-          <right-toolbar v-model:showSearch="showSearch" :export="'demo_demo_export'"
+          <!-- <right-toolbar v-model:showSearch="showSearch" :export="'demo_demo_export'"
                 @exportExcel="exportExcel" class="ml10 mr20" style="float: right;"
-            @queryTable="getDataList"></right-toolbar>
+            @queryTable="getDataList"></right-toolbar> -->
         </div>
       </el-row>
-      <el-table :data="state.dataList" v-loading="state.loading" border 
+      <!-- <el-table :data="state.dataList" v-loading="state.loading" border 
         :cell-style="tableStyle.cellStyle" :header-cell-style="tableStyle.headerCellStyle"
 				@selection-change="selectionChangHandle"
         @sort-change="sortChangeHandle">
@@ -86,9 +87,8 @@
         </el-table-column>
       </el-table>
       <pagination @size-change="sizeChangeHandle" @current-change="currentChangeHandle" v-bind="state.pagination" />
-      <div class="sm:flex">
+      <div class="sm:flex"> -->
 		</div>
-    </div>
 
     <!-- 编辑、新增  -->
     <form-dialog ref="formDialogRef" @refresh="getDataList(false)" />
@@ -227,17 +227,18 @@ const handleDelete = async (ids: string[]) => {
   }
 };
 
-const varx = ref();
-const vary1 = ref();
-const vary2 = ref();
-const vary3 = ref('');
-const vary4 = ref();
+const xName = ref();
+const y1Name = ref();
+const y2Name = ref();
+const start = ref('');
+const end = ref('');
+
+const num = ref(1)
+const handleChange = (value: number) => {
+  console.log(value)
+}
 
 const dialogVisible = ref(false);
-
-// const openDialog = () => {
-//   dialogVisible.value = true;
-// };
 
 // //下拉菜单选择时间
 // function change(varx: any) {
@@ -305,16 +306,16 @@ const chartOptions = reactive({
 
 // console.log(vary3.value)
 
-const makeChart1 = async (property1: any, property2: any, property3: any) => {
+const makeChart1 = async (property1: any, property2: any, property3: any, property4:any) => {
 
-  const dateObj1 = new Date(vary3.value);
+  const dateObj1 = new Date(start.value);
   const starting = dayjs(dateObj1).format('YYYY-MM-DD HH:mm:ss');
-  const dateObj2 = new Date(vary4.value);
+  const dateObj2 = new Date(end.value);
   const ending = dayjs(dateObj2).format('YYYY-MM-DD HH:mm:ss');
   // console.log(my)
  
-  const detaaxis1 = await getProcess({ tableName: property1, startTime: starting, endTime: ending, columnName: property2 })
-  const detaaxis2 = await getProcess({ tableName: property1, startTime: starting, endTime: ending , columnName: property3})
+  const detaaxis1 = await getProcess({ tableName: property1, startTime: starting, endTime: ending, columnName: property2 , num: 0})
+  const detaaxis2 = await getProcess({ tableName: property1, startTime: starting, endTime: ending , columnName: property3 , num: property4})
   const timeaxis = await getObjlist({ tableName: property1, startTime : starting, endTime : ending })
   //let result1 = res1.map((item) => item[change(property1)]);
 
