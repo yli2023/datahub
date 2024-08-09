@@ -102,7 +102,7 @@ onMounted(() => {
   });
 });
 
-const openGen = (row) => {
+const openGen = (row:any) => {
   useTableApi(state.queryForm.dsName, row.name)
       .then((res) => {
         if (validateNull(res.data.fieldList)) {

@@ -46,7 +46,7 @@ export function getObj(obj?: Object) {
  */
 export function getProcess(query?: Object) {
   return request({
-    url: '/demo/demo/process',
+    url: 'demo/demo/process',
     method: 'get',
     params: query
   }).then(response => {

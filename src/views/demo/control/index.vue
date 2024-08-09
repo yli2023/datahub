@@ -28,7 +28,8 @@
             <el-button icon="edit-pen" text type="primary" v-auth="'demo_control_edit'"
               @click="formDialogRef.openDialog(scope.row.id)">编辑</el-button>
             <el-button icon="delete" text type="primary" v-auth="'demo_control_del'" @click="handleDelete([scope.row.id])">删除</el-button>
-            <el-button @click="handleButtonClick(scope.row.username)" type="button" id="add">选择</el-button>
+            <el-button @click="openTable(scope.row.username)" type="button" id="add">选择</el-button>
+            <title-more :table="scope.row.username" />
           </template>
         </el-table-column>
       </el-table>
@@ -46,6 +47,7 @@ import { BasicTableProps, useTable } from "/@/hooks/table";
 import { fetchList, delObjs } from "/@/api/demo/control";
 import { useMessage, useMessageBox } from "/@/hooks/message";
 import { useDict } from '/@/hooks/dict';
+import router from "/@/router";
 
 // 引入组件
 const FormDialog = defineAsyncComponent(() => import('./form.vue'));
@@ -112,12 +114,23 @@ const handleDelete = async (ids: string[]) => {
   }
 };
 
-function handleButtonClick(tablename:any) {
+const openTable = (tableName: any) => {
+  window.location.href="http://localhost:8888/demo/index.html#/demo/demo/index";
+  router.push({
+    path: '/demo/demo/index',
+    query: {
+      tableName: tableName,
+    },
+  });
+  console.log(tableName)
+};
+
+function handleButtonClick(tableName:any) {
   // // 执行页面跳转逻辑
   // window.location.href="http://localhost:8888/demo/index.html#/demo/project/index";
 
    // 获取输入的参数值
-   var paramValue = tablename;
+   var paramValue = tableName;
 
   // 拼接URL
   var url = "http://localhost:8888/demo/index.html#/demo/" + paramValue + "/index";

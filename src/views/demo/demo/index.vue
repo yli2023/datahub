@@ -6,7 +6,7 @@
           <el-dialog title="图表" 
             :modal-append-to-body='true'
             v-model="dialogVisible"
-              @open="makeChart1(varx, vary1, vary2, vary3, vary4)"
+              @open="makeChart1(tableName, vary1, vary2)"
               append-to-body>
               <el-card class="sm:mr-4 flex-1 !border-none mt-4" shadow="never">
                 <div>
@@ -27,12 +27,30 @@
             <el-select placeholder="选择一个y轴参数可为空" v-model="vary2">
               <el-option :key="item" :label="item" :value="item" v-for="item in column.list"></el-option>
             </el-select>
-            <el-select placeholder="选择起始时间" v-model="vary3">
+            <div class="demo-datetime-picker">
+              <div class="block">
+                <span class="demonstration">StartTime</span>
+                <el-date-picker
+                  v-model="vary3"
+                  type="datetime"
+                  placeholder="Select date and time"
+                />
+              </div>
+              <div class="block">
+                <span class="demonstration">EndTime</span>
+                <el-date-picker
+                  v-model="vary4"
+                  type="datetime"
+                  placeholder="Select date and time"
+                />
+              </div>
+            </div>
+            <!-- <el-select placeholder="选择起始时间" v-model="vary3">
               <el-option :key="item" :label="item" :value="item" v-for="item in time.list"></el-option>
             </el-select>
             <el-select placeholder="选择终止时间" v-model="vary4">
               <el-option :key="item" :label="item" :value="item" v-for="item in time.list"></el-option>
-            </el-select>
+            </el-select> -->
           </el-form-item>
           <el-button icon="folder-add" type="primary" class="ml10" @click="formDialogRef.openDialog()"
             v-auth="'demo_demo_add'">
@@ -43,9 +61,9 @@
             删除
           </el-button>
           <!-- <el-button icon="folder-add" type="primary" class="ml10" @click="() => makeChart('username', 'nicename')"> -->
-          <el-button icon="folder-add" type="primary" class="ml10" @click="() => makeChart1(varx, vary1, vary2, vary3, vary4)">
+          <!-- <el-button icon="folder-add" type="primary" class="ml10" @click="() => makeChart1(tableName, vary1, vary2, vary3, vary4)">
             绘图
-          </el-button>
+          </el-button> -->
           <right-toolbar v-model:showSearch="showSearch" :export="'demo_demo_export'"
                 @exportExcel="exportExcel" class="ml10 mr20" style="float: right;"
             @queryTable="getDataList"></right-toolbar>
@@ -74,13 +92,11 @@
 
     <!-- 编辑、新增  -->
     <form-dialog ref="formDialogRef" @refresh="getDataList(false)" />
-
-
   </div>
 </template>
 
 <script setup lang="ts" name="systemDemo">
-// import { defineAsyncComponent } from 'vue';
+import dayjs from 'dayjs';
 import { BasicTableProps, useTable } from "/@/hooks/table";
 import { fetchList, delObjs , getObjlist , getObjlist_page, getColumn, getProcess , getTimeList} from "/@/api/demo/demo";
 import { useMessage, useMessageBox } from "/@/hooks/message";
@@ -88,7 +104,7 @@ import { useDict } from '/@/hooks/dict';
 import * as echarts from 'echarts';
 import { systemCache } from '/@/api/admin/system';
 import { markRaw } from 'vue';
-import moment from 'moment'
+import { useRoute } from 'vue-router'
 
 
 // 引入组件
@@ -113,23 +129,30 @@ const column = reactive({
   list: <any>[]
 })
 
+
+const route = useRoute()
+
+let tableName = route.query.tableName;
+
+console.log(tableName)
+
 const getList = async () => {
-  column.list = await getColumn()
-  console.log(column.list)
+  column.list = await getColumn({tableName:tableName})
+  // console.log(column.list)
 }
 
 getList()
 
-const time = reactive({
-  list: <any>[]
-})
+// const time = reactive({
+//   list: <any>[]
+// })
 
-const getTime = async () => {
-  time.list = await getTimeList()
-  // console.log(time.list)
-}
+// const getTime = async () => {
+//   time.list = await getTimeList({tableName:tableName})
+//   // console.log(time.list)
+// }
 
-getTime()
+// getTime()
 
 // const state: BasicTableProps = reactive<BasicTableProps>({
 //   queryForm: {},
@@ -145,7 +168,6 @@ const {
   downBlobFile,
 	tableStyle
 } = useTable(state)
-
 
 // 筛选操作
 const handleSelectList = async () => {
@@ -208,27 +230,29 @@ const handleDelete = async (ids: string[]) => {
 const varx = ref();
 const vary1 = ref();
 const vary2 = ref();
-const vary3 = ref();
+const vary3 = ref('');
 const vary4 = ref();
 
 const dialogVisible = ref(false);
 
-const openDialog = () => {
-  dialogVisible.value = true;
-};
+// const openDialog = () => {
+//   dialogVisible.value = true;
+// };
 
-//下拉菜单选择时间
-function change(varx: any) {
-  let var1 = '';
-  if (varx == 'create_time') {
-    var1 = 'createTime';
-  } else if (varx == 'update_time') {
-    var1 = 'updateTime';
-  }
-  return var1;
-}
+// //下拉菜单选择时间
+// function change(varx: any) {
+//   let var1 = '';
+//   if (varx == 'create_time') {
+//     var1 = 'createTime';
+//   } else if (varx == 'update_time') {
+//     var1 = 'updateTime';
+//   }
+//   return var1;
+// }
 
 //制表
+
+
 const commandChartRef = ref();
 
 const chartOptions = reactive({
@@ -248,7 +272,7 @@ const chartOptions = reactive({
         lineStyle: {
             color: 'green',
             width: 4,
-            type: 'dashed'
+            type: 'solid'
         }
       },
       {
@@ -257,31 +281,41 @@ const chartOptions = reactive({
         lineStyle: {
             color: 'blue',
             width: 4,
-            type: 'dashed'
+            type: 'solid'
         }
 			},
 		],
 	},
 });
 
-const alpha = 0.5;
-//指数滤波
-function exponentialSmoothing(data:any, alpha:any) {
-  let smoothedData = [data[0]]; // 初始化平滑后的数据数组
+// const alpha = 0.5;
+// //指数滤波
+// function exponentialSmoothing(data:any, alpha:any) {
+//   let smoothedData = [data[0]]; // 初始化平滑后的数据数组
 
-  for (let i = 1; i < data.length; i++) {
-    const smoothedValue = alpha * data[i] + (1 - alpha) * smoothedData[i - 1];
-    smoothedData.push(smoothedValue);
-  }
+//   for (let i = 1; i < data.length; i++) {
+//     const smoothedValue = alpha * data[i] + (1 - alpha) * smoothedData[i - 1];
+//     smoothedData.push(smoothedValue);
+//   }
 
-  return smoothedData;
-}
+//   return smoothedData;
+// }
 
 //滑动平均滤波制图
-const makeChart1 = async (property1: any, property2: any, property3: any, property4: any, property5: any) => {
-  const detaaxis1 = await getProcess({ startTime: property4, endTime: property5 , columnName: property2})
-  const detaaxis2 = await getProcess({ startTime: property4, endTime: property5 , columnName: property3})
-  const timeaxis = await getObjlist({ startTime : property4, endTime : property5 })
+
+// console.log(vary3.value)
+
+const makeChart1 = async (property1: any, property2: any, property3: any) => {
+
+  const dateObj1 = new Date(vary3.value);
+  const starting = dayjs(dateObj1).format('YYYY-MM-DD HH:mm:ss');
+  const dateObj2 = new Date(vary4.value);
+  const ending = dayjs(dateObj2).format('YYYY-MM-DD HH:mm:ss');
+  // console.log(my)
+ 
+  const detaaxis1 = await getProcess({ tableName: property1, startTime: starting, endTime: ending, columnName: property2 })
+  const detaaxis2 = await getProcess({ tableName: property1, startTime: starting, endTime: ending , columnName: property3})
+  const timeaxis = await getObjlist({ tableName: property1, startTime : starting, endTime : ending })
   //let result1 = res1.map((item) => item[change(property1)]);
 
   let pairs1 = timeaxis.map((item, index) => [item, detaaxis1[index]]);
@@ -295,30 +329,54 @@ const makeChart1 = async (property1: any, property2: any, property3: any, proper
   commandChart.setOption(chartOptions.commandChartOption);
 };
 
-//指数滤波制图
-const makeChart2 = async (property1: any, property2: any, property3: any) => {
-  const res = await getObjlist()
+// //指数滤波制图
+// const makeChart2 = async (property1: any, property2: any, property3: any) => {
+//   const res = await getObjlist()
 
-  // let result1 = res.map((item) => new Date(item[change(property1)]));
-  let result1 = res.map((item) => item[change(property1)]);
-  let result2 = res.map((item) => item[property2]);
-  let pairs1 = result1.map((item, index) => [item, result2[index]]);
-  let result3 = res.map((item) => item[property3]);
-  let pairs2 = result1.map((item, index) => [item, result3[index]]);
+//   // let result1 = res.map((item) => new Date(item[change(property1)]));
+//   let result1 = res.map((item) => item[change(property1)]);
+//   let result2 = res.map((item) => item[property2]);
+//   let pairs1 = result1.map((item, index) => [item, result2[index]]);
+//   let result3 = res.map((item) => item[property3]);
+//   let pairs2 = result1.map((item, index) => [item, result3[index]]);
 
-  let arr2 = new Array();
-  let arr3 = new Array();
+//   let arr2 = new Array();
+//   let arr3 = new Array();
 
-  arr2 = exponentialSmoothing(result2, alpha)
-  arr3=exponentialSmoothing(result3, alpha)
+//   arr2 = exponentialSmoothing(result2, alpha)
+//   arr3=exponentialSmoothing(result3, alpha)
 
-  // chartOptions.commandChartOption.xAxis.data = result1;
-  // console.log(chartOptions.commandChartOption.xAxis.data)
-  chartOptions.commandChartOption.series[0].data = pairs1;
-  console.log(chartOptions.commandChartOption.series[0].data)
-  chartOptions.commandChartOption.series[1].data = pairs2;
+//   // chartOptions.commandChartOption.xAxis.data = result1;
+//   // console.log(chartOptions.commandChartOption.xAxis.data)
+//   chartOptions.commandChartOption.series[0].data = pairs1;
+//   console.log(chartOptions.commandChartOption.series[0].data)
+//   chartOptions.commandChartOption.series[1].data = pairs2;
 
-  const commandChart = markRaw(echarts.init(commandChartRef.value));
-  commandChart.setOption(chartOptions.commandChartOption);
-};
+//   const commandChart = markRaw(echarts.init(commandChartRef.value));
+//   commandChart.setOption(chartOptions.commandChartOption);
+// };
 </script>
+
+<style scoped>
+.demo-datetime-picker {
+  display: flex;
+  width: 100%;
+  padding: 0;
+  flex-wrap: wrap;
+}
+.demo-datetime-picker .block {
+  padding: 30px 0;
+  text-align: center;
+  border-right: solid 1px var(--el-border-color);
+  flex: 1;
+}
+.demo-datetime-picker .block:last-child {
+  border-right: none;
+}
+.demo-datetime-picker .demonstration {
+  display: block;
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+</style>
